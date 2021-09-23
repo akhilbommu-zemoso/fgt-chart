@@ -6,11 +6,9 @@ metadata:
     name: frontend-service
     app: FGT
 spec:
-  type: NodePort
   ports:
-    - port: 3000
-      targetPort: 3000
-      nodePort: 30014
+    - port: 3001
+      targetPort: 3001
   selector:
     name: frontend-pod
     app: FGT
@@ -39,8 +37,8 @@ metadata:
     app: FGT
 spec:
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8083
+      targetPort: 8083
   selector:
     name: backend-budget-pod
     app: FGT
@@ -54,8 +52,8 @@ metadata:
     app: FGT
 spec:
   ports:
-    - port: 8081
-      targetPort: 8081
+    - port: 8084
+      targetPort: 8084
   selector:
     name: backend-transaction-pod
     app: FGT

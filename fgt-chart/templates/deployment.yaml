@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: postgres-deploy
   labels:
     name: postgres-deploy
     app: FGT
 spec:
+  serviceName: postgres
   replicas: 2
   selector:
     matchLabels:
@@ -19,7 +20,7 @@ spec:
         app: FGT
     spec:
       containers:
-        - name: postgres-pod
+        - name: postgres
           image: postgres
           ports:
             - containerPort: 5432
@@ -30,6 +31,13 @@ spec:
               value: "password" 
             - name: "POSTGRES_DB"
               value: "financetracker"
+          volumeMounts:
+            - name: pv-data-fgt
+              mountPath: /var/lib/postgresql/fgtdata
+      volumes:
+        - name: pv-data-fgt
+          persistentVolumeClaim:
+            claimName: pvc-fgt
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -55,7 +63,7 @@ spec:
         - name: frontend
           image: akhilzemoso/fgt
           ports:
-            - containerPort: 3000
+            - containerPort: 3001
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -81,7 +89,7 @@ spec:
         - name: backend
           image: akhilzemoso/budgetsvc4
           ports:
-            - containerPort: 8080
+            - containerPort: 8083
           env:
             - name: "SPRING_DATASOURCE_URL"
               value: "jdbc:postgresql://postgres:5432/financetracker"
@@ -116,7 +124,7 @@ spec:
         - name: backend
           image: akhilzemoso/transactionsvc
           ports:
-            - containerPort: 8081
+            - containerPort: 8084
           env:
             - name: "SPRING_DATASOURCE_URL"
               value: "jdbc:postgresql://postgres:5432/financetracker"
